@@ -86,500 +86,466 @@
             #info { bottom: 16px; left: 16px; font-size: 11px; padding: 6px 14px; }
             #instruction { bottom: 16px; right: 16px; font-size: 10px; padding: 5px 12px; }
         }
-        #loading {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #3a4a2a;
-            background: rgba(230, 240, 220, 0.8);
-            padding: 6px 20px;
-            border-radius: 30px;
-            font-size: 14px;
-            backdrop-filter: blur(4px);
-            z-index: 30;
-            transition: opacity 0.5s;
-            pointer-events: none;
-        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Three.js core and OrbitControls from CDN (compatible versions) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+            }
+        }
+    </script>
 </head>
 <body>
     <div id="ui-container">
         <div id="title">THE SYCAMORE TREE</div>
+        
     </div>
     <div id="info">🌿 Drag to look · Pinch to zoom</div>
+    <div id="instruction">🐕 Frank </div>
 
-    <script>
-        (function() {
-            // --- Setup Scene, Camera, Renderer ---
-            const scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xb8cbd9);
-            scene.fog = new THREE.FogExp2(0xb8cbd9, 0.0032);
-            
-            const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-            camera.position.set(14, 9, 22);
-            camera.lookAt(0, 6, 0);
-            
-            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            document.body.appendChild(renderer.domElement);
-            
-            const controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.autoRotate = true;
-            controls.autoRotateSpeed = 0.5;
-            controls.enableZoom = true;
-            controls.enablePan = false;
-            controls.maxPolarAngle = Math.PI / 2.4;
-            controls.minDistance = 8;
-            controls.maxDistance = 35;
-            controls.target.set(0, 7, 0);
-            
-            // --- Lighting ---
-            scene.add(new THREE.AmbientLight(0x404c66, 0.5));
-            
-            const sunLight = new THREE.DirectionalLight(0xfff2d6, 1.2);
-            sunLight.position.set(18, 28, 12);
-            sunLight.castShadow = true;
-            sunLight.receiveShadow = true;
-            sunLight.shadow.mapSize.width = 2048;
-            sunLight.shadow.mapSize.height = 2048;
-            const d = 28;
-            sunLight.shadow.camera.left = -d;
-            sunLight.shadow.camera.right = d;
-            sunLight.shadow.camera.top = d;
-            sunLight.shadow.camera.bottom = -d;
-            sunLight.shadow.camera.near = 1;
-            sunLight.shadow.camera.far = 50;
-            sunLight.shadow.bias = -0.0005;
-            scene.add(sunLight);
-            
-            const fillLight = new THREE.PointLight(0xeebb88, 0.7);
-            fillLight.position.set(-12, 8, 18);
-            scene.add(fillLight);
-            
-            const backLight = new THREE.PointLight(0xaaccff, 0.5);
-            backLight.position.set(-6, 10, -22);
-            scene.add(backLight);
-            
-            // --- Ground ---
-            const groundGeo = new THREE.CircleGeometry(60, 32);
-            const groundMat = new THREE.MeshStandardMaterial({ color: 0x4a6741, roughness: 0.9, metalness: 0.02, side: THREE.DoubleSide });
-            const ground = new THREE.Mesh(groundGeo, groundMat);
-            ground.rotation.x = -Math.PI / 2;
-            ground.position.y = -0.05;
-            ground.receiveShadow = true;
-            scene.add(ground);
-            
-            const grassMat = new THREE.MeshStandardMaterial({ color: 0x5d7a4a, roughness: 0.95 });
-            for (let i = 0; i < 200; i++) {
-                const patch = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 0.04, 5), grassMat);
-                const angle = Math.random() * Math.PI * 2;
-                const radius = 5 + Math.random() * 18;
-                patch.position.x = Math.cos(angle) * radius;
-                patch.position.z = Math.sin(angle) * radius;
-                patch.position.y = 0;
-                patch.receiveShadow = true;
-                patch.rotation.y = Math.random() * Math.PI;
-                scene.add(patch);
+    <script type="module">
+        // Using ES modules for better compatibility and avoiding legacy global issues
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Setup Scene, Camera, Renderer ---
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xb8cbd9);
+        scene.fog = new THREE.FogExp2(0xb8cbd9, 0.0032);
+        
+        const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(14, 9, 22);
+        camera.lookAt(0, 6, 0);
+        
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+        
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = true;
+        controls.autoRotateSpeed = 0.5;
+        controls.enableZoom = true;
+        controls.enablePan = false;
+        controls.maxPolarAngle = Math.PI / 2.4;
+        controls.minDistance = 8;
+        controls.maxDistance = 35;
+        controls.target.set(0, 7, 0);
+        
+        // --- Lighting ---
+        scene.add(new THREE.AmbientLight(0x404c66, 0.5));
+        
+        const sunLight = new THREE.DirectionalLight(0xfff2d6, 1.2);
+        sunLight.position.set(18, 28, 12);
+        sunLight.castShadow = true;
+        sunLight.receiveShadow = true;
+        sunLight.shadow.mapSize.width = 2048;
+        sunLight.shadow.mapSize.height = 2048;
+        const d = 28;
+        sunLight.shadow.camera.left = -d;
+        sunLight.shadow.camera.right = d;
+        sunLight.shadow.camera.top = d;
+        sunLight.shadow.camera.bottom = -d;
+        sunLight.shadow.camera.near = 1;
+        sunLight.shadow.camera.far = 50;
+        sunLight.shadow.bias = -0.0005;
+        scene.add(sunLight);
+        
+        const fillLight = new THREE.PointLight(0xeebb88, 0.7);
+        fillLight.position.set(-12, 8, 18);
+        scene.add(fillLight);
+        
+        const backLight = new THREE.PointLight(0xaaccff, 0.5);
+        backLight.position.set(-6, 10, -22);
+        scene.add(backLight);
+        
+        // --- Ground ---
+        const groundGeo = new THREE.CircleGeometry(60, 32);
+        const groundMat = new THREE.MeshStandardMaterial({ color: 0x4a6741, roughness: 0.9, metalness: 0.02, side: THREE.DoubleSide });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -0.05;
+        ground.receiveShadow = true;
+        scene.add(ground);
+        
+        const grassMat = new THREE.MeshStandardMaterial({ color: 0x5d7a4a, roughness: 0.95 });
+        for (let i = 0; i < 200; i++) {
+            const patch = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.14, 0.04, 5), grassMat);
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 5 + Math.random() * 18;
+            patch.position.x = Math.cos(angle) * radius;
+            patch.position.z = Math.sin(angle) * radius;
+            patch.position.y = 0;
+            patch.receiveShadow = true;
+            patch.rotation.y = Math.random() * Math.PI;
+            scene.add(patch);
+        }
+        
+        const stoneMat = new THREE.MeshStandardMaterial({ color: 0x8a7f6d, roughness: 0.9 });
+        for (let i = 0; i < 25; i++) {
+            const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(0.12 + Math.random()*0.2), stoneMat);
+            const angle = Math.random() * Math.PI * 2;
+            const radius = 3.5 + Math.random() * 10;
+            stone.position.x = Math.cos(angle) * radius;
+            stone.position.z = Math.sin(angle) * radius;
+            stone.position.y = 0.05;
+            stone.rotation.y = Math.random() * Math.PI;
+            stone.rotation.x = Math.random() * 0.3;
+            stone.receiveShadow = true;
+            stone.castShadow = true;
+            scene.add(stone);
+        }
+        
+        // --- Realistic Sycamore Tree ---
+        const treeGroup = new THREE.Group();
+        
+        // Create a mottled bark texture procedurally via canvas
+        const canvas = document.createElement('canvas');
+        canvas.width = 256;
+        canvas.height = 256;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#b8a78d';
+        ctx.fillRect(0, 0, 256, 256);
+        for (let i = 0; i < 200; i++) {
+            ctx.fillStyle = i % 3 === 0 ? '#d4c4a8' : '#8c7a62';
+            ctx.beginPath();
+            ctx.arc(Math.random()*256, Math.random()*256, 5+Math.random()*20, 0, Math.PI*2);
+            ctx.fill();
+        }
+        ctx.strokeStyle = '#a09078';
+        ctx.lineWidth = 3;
+        for (let i = 0; i < 30; i++) {
+            ctx.beginPath();
+            ctx.moveTo(Math.random()*256, 0);
+            ctx.lineTo(Math.random()*256, 256);
+            ctx.stroke();
+        }
+        const barkTexture = new THREE.CanvasTexture(canvas);
+        
+        const barkMat = new THREE.MeshStandardMaterial({ 
+            map: barkTexture,
+            color: 0xc0b09a, 
+            roughness: 0.9, 
+            metalness: 0.05,
+            bumpMap: barkTexture,
+            bumpScale: 0.3
+        });
+        
+        const leafMat = new THREE.MeshStandardMaterial({ 
+            color: 0x6a9a5b, 
+            roughness: 0.5, 
+            metalness: 0.0, 
+            emissive: new THREE.Color(0x2a4a1a), 
+            emissiveIntensity: 0.15, 
+            transparent: true, 
+            side: THREE.DoubleSide 
+        });
+        
+        function addFoliageCluster(pos, size) {
+            const clusterGroup = new THREE.Group();
+            const numLeaves = 5 + Math.floor(Math.random() * 6);
+            for (let i = 0; i < numLeaves; i++) {
+                const leaf = new THREE.Mesh(new THREE.SphereGeometry(size * (0.6 + Math.random()*0.5), 5), leafMat);
+                leaf.position.set(
+                    (Math.random() - 0.5) * size * 1.5,
+                    (Math.random() - 0.5) * size * 1.2,
+                    (Math.random() - 0.5) * size * 1.5
+                );
+                leaf.castShadow = true;
+                leaf.receiveShadow = true;
+                clusterGroup.add(leaf);
             }
+            clusterGroup.position.copy(pos);
+            return clusterGroup;
+        }
+        
+        function createBranch(start, dir, len, thick, angle, lvl) {
+            const end = start.clone().add(dir.clone().multiplyScalar(len));
+            const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(thick*0.85, thick, len, 8), barkMat);
+            const mid = start.clone().add(end).multiplyScalar(0.5);
+            cylinder.position.copy(mid);
+            cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize());
+            cylinder.castShadow = true;
+            cylinder.receiveShadow = true;
+            treeGroup.add(cylinder);
             
-            const stoneMat = new THREE.MeshStandardMaterial({ color: 0x8a7f6d, roughness: 0.9 });
-            for (let i = 0; i < 25; i++) {
-                const stone = new THREE.Mesh(new THREE.DodecahedronGeometry(0.12 + Math.random()*0.2), stoneMat);
-                const angle = Math.random() * Math.PI * 2;
-                const radius = 3.5 + Math.random() * 10;
-                stone.position.x = Math.cos(angle) * radius;
-                stone.position.z = Math.sin(angle) * radius;
-                stone.position.y = 0.05;
-                stone.rotation.y = Math.random() * Math.PI;
-                stone.rotation.x = Math.random() * 0.3;
-                stone.receiveShadow = true;
-                stone.castShadow = true;
-                scene.add(stone);
-            }
-            
-            // --- Realistic Sycamore Tree ---
-            const treeGroup = new THREE.Group();
-            
-            // Create a mottled bark texture procedurally via canvas
-            const canvas = document.createElement('canvas');
-            canvas.width = 256;
-            canvas.height = 256;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#b8a78d';
-            ctx.fillRect(0, 0, 256, 256);
-            // Add patches of lighter and darker colors
-            for (let i = 0; i < 200; i++) {
-                ctx.fillStyle = i % 3 === 0 ? '#d4c4a8' : '#8c7a62';
-                ctx.beginPath();
-                ctx.arc(Math.random()*256, Math.random()*256, 5+Math.random()*20, 0, Math.PI*2);
-                ctx.fill();
-            }
-            // Add some vertical streaking
-            ctx.strokeStyle = '#a09078';
-            ctx.lineWidth = 3;
-            for (let i = 0; i < 30; i++) {
-                ctx.beginPath();
-                ctx.moveTo(Math.random()*256, 0);
-                ctx.lineTo(Math.random()*256, 256);
-                ctx.stroke();
-            }
-            const barkTexture = new THREE.CanvasTexture(canvas);
-            
-            const barkMat = new THREE.MeshStandardMaterial({ 
-                map: barkTexture,
-                color: 0xc0b09a, 
-                roughness: 0.9, 
-                metalness: 0.05,
-                bumpMap: barkTexture,
-                bumpScale: 0.3
-            });
-            
-            // Leaf material with subtle variation
-            const leafMat = new THREE.MeshStandardMaterial({ 
-                color: 0x6a9a5b, 
-                roughness: 0.5, 
-                metalness: 0.0, 
-                emissive: new THREE.Color(0x2a4a1a), 
-                emissiveIntensity: 0.15, 
-                transparent: true, 
-                side: THREE.DoubleSide 
-            });
-            
-            // Create a more sycamore-like leaf cluster using small overlapping spheres
-            function addFoliageCluster(pos, size) {
-                const clusterGroup = new THREE.Group();
-                const numLeaves = 5 + Math.floor(Math.random() * 6);
-                for (let i = 0; i < numLeaves; i++) {
-                    const leaf = new THREE.Mesh(new THREE.SphereGeometry(size * (0.6 + Math.random()*0.5), 5), leafMat);
-                    leaf.position.set(
-                        (Math.random() - 0.5) * size * 1.5,
-                        (Math.random() - 0.5) * size * 1.2,
-                        (Math.random() - 0.5) * size * 1.5
-                    );
-                    leaf.castShadow = true;
-                    leaf.receiveShadow = true;
-                    clusterGroup.add(leaf);
-                }
-                clusterGroup.position.copy(pos);
-                return clusterGroup;
-            }
-            
-            // Build trunk and main branches with wider angles (sycamore characteristic)
-            function createBranch(start, dir, len, thick, angle, lvl) {
-                const end = start.clone().add(dir.clone().multiplyScalar(len));
-                const cylinder = new THREE.Mesh(new THREE.CylinderGeometry(thick*0.85, thick, len, 8), barkMat);
-                const mid = start.clone().add(end).multiplyScalar(0.5);
-                cylinder.position.copy(mid);
-                cylinder.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize());
-                cylinder.castShadow = true;
-                cylinder.receiveShadow = true;
-                treeGroup.add(cylinder);
-                
-                if (lvl >= 2) {
-                    // Add leaf clusters at branch tips
-                    const cluster = addFoliageCluster(end, len * 1.2);
-                    treeGroup.add(cluster);
-                }
-                
-                if (len < 1.2 || lvl > 5) return;
-                
-                // Sycamores have wide spreading branches, so we increase the spread angle
-                const num = lvl === 0 ? 5 : (lvl === 1 ? 4 : 3);
-                const newLen = len * (0.65 + Math.random()*0.15);
-                const newThick = thick * 0.65;
-                
-                for (let i=0; i<num; i++) {
-                    const spread = (angle + 30 + Math.random()*30) * Math.PI/180; // wider angles
-                    const rot = (i/num)*Math.PI*2 + Math.random()*0.5;
-                    const up = new THREE.Vector3(0,1,0);
-                    const axis = new THREE.Vector3().crossVectors(up, dir).normalize();
-                    if (axis.length() > 0.1) {
-                        const newDir = dir.clone().applyAxisAngle(axis, spread).applyAxisAngle(dir, rot);
-                        createBranch(end, newDir, newLen, newThick, angle*0.9, lvl+1);
-                    }
-                }
-            }
-            
-            createBranch(new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0), 9, 2.0, 8, 0);
-            
-            // Additional foliage to create dense, broad canopy
-            for (let i=0; i<60; i++) {
-                const a = Math.random()*Math.PI*2;
-                const r = 3 + Math.random()*6;
-                const h = 6 + Math.random()*7;
-                const cluster = addFoliageCluster(new THREE.Vector3(Math.cos(a)*r, h, Math.sin(a)*r), 1.2 + Math.random()*1.5);
+            if (lvl >= 2) {
+                const cluster = addFoliageCluster(end, len * 1.2);
                 treeGroup.add(cluster);
             }
             
-            // Top canopy
-            const topCluster = addFoliageCluster(new THREE.Vector3(0.5, 13, -0.5), 3.0);
-            treeGroup.add(topCluster);
-            const topCluster2 = addFoliageCluster(new THREE.Vector3(-0.8, 12.5, 1.2), 2.5);
-            treeGroup.add(topCluster2);
+            if (len < 1.2 || lvl > 5) return;
             
-            treeGroup.position.y = 0;
-            scene.add(treeGroup);
+            const num = lvl === 0 ? 5 : (lvl === 1 ? 4 : 3);
+            const newLen = len * (0.65 + Math.random()*0.15);
+            const newThick = thick * 0.65;
             
-            // Collect leaf meshes for wind animation
-            const leafMeshes = [];
-            treeGroup.traverse(obj => {
-                if (obj.isMesh && obj.material === leafMat) leafMeshes.push(obj);
-            });
-            
-            // --- Realistic Dachshund (facing correctly) ---
-            const dogGroup = new THREE.Group();
-            
-            // Materials
-            const furBrown = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.8 });
-            const furDark = new THREE.MeshStandardMaterial({ color: 0x5D3A1A, roughness: 0.9 });
-            const furTan = new THREE.MeshStandardMaterial({ color: 0xD2A679, roughness: 0.8 });
-            const noseMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.4 });
-            const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.1 });
-            
-            // Body
-            const body = new THREE.Mesh(new THREE.SphereGeometry(0.45, 12, 8), furBrown);
-            body.scale.set(1.8, 0.7, 0.8);
-            body.position.y = 0.35;
-            body.castShadow = true;
-            body.receiveShadow = true;
-            dogGroup.add(body);
-            
-            // Chest
-            const chest = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8), furTan);
-            chest.scale.set(1.3, 0.5, 0.7);
-            chest.position.set(0.5, 0.25, -0.15);
-            chest.castShadow = true;
-            chest.receiveShadow = true;
-            dogGroup.add(chest);
-            
-            // Head
-            const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10), furBrown);
-            head.position.set(0.9, 0.55, 0);
-            head.scale.set(0.9, 0.8, 0.7);
-            head.castShadow = true;
-            head.receiveShadow = true;
-            dogGroup.add(head);
-            
-            // Snout
-            const snout = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.6, 6), furBrown);
-            snout.rotation.z = Math.PI / 2;
-            snout.position.set(1.25, 0.45, 0);
-            snout.castShadow = true;
-            snout.receiveShadow = true;
-            dogGroup.add(snout);
-            
-            // Nose
-            const nose = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6), noseMat);
-            nose.position.set(1.55, 0.45, 0);
-            nose.castShadow = true;
-            dogGroup.add(nose);
-            
-            // Eyes
-            const eyeGeo = new THREE.SphereGeometry(0.07, 6);
-            const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
-            eyeL.position.set(1.05, 0.65, 0.18);
-            eyeL.castShadow = true;
-            dogGroup.add(eyeL);
-            const eyeR = eyeL.clone();
-            eyeR.position.set(1.05, 0.65, -0.18);
-            dogGroup.add(eyeR);
-            
-            // Eye shine
-            const shineMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: new THREE.Color(0xaaaaaa), emissiveIntensity: 0.8 });
-            const shineL = new THREE.Mesh(new THREE.SphereGeometry(0.03, 4), shineMat);
-            shineL.position.set(1.08, 0.68, 0.2);
-            dogGroup.add(shineL);
-            const shineR = shineL.clone();
-            shineR.position.set(1.08, 0.68, -0.2);
-            dogGroup.add(shineR);
-            
-            // Floppy ears
-            const earGeo = new THREE.SphereGeometry(0.22, 7);
-            const earL = new THREE.Mesh(earGeo, furDark);
-            earL.position.set(0.9, 0.7, 0.28);
-            earL.scale.set(0.8, 1.4, 0.4);
-            earL.rotation.z = -0.2;
-            earL.rotation.x = -0.3;
-            earL.castShadow = true;
-            dogGroup.add(earL);
-            const earR = earL.clone();
-            earR.position.set(0.9, 0.7, -0.28);
-            earR.rotation.z = -0.2;
-            earR.rotation.x = 0.3;
-            dogGroup.add(earR);
-            
-            // Legs
-            const legGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.3, 6);
-            const pawGeo = new THREE.SphereGeometry(0.11, 5);
-            
-            const legPositions = [
-                { x: -0.45, z: 0.25 },
-                { x: -0.45, z: -0.25 },
-                { x: 0.55, z: 0.25 },
-                { x: 0.55, z: -0.25 }
-            ];
-            
-            const legs = [];
-            legPositions.forEach(pos => {
-                const leg = new THREE.Mesh(legGeo, furBrown);
-                leg.position.set(pos.x, 0.2, pos.z);
-                leg.castShadow = true;
-                leg.receiveShadow = true;
-                dogGroup.add(leg);
-                legs.push(leg);
-                
-                const paw = new THREE.Mesh(pawGeo, furDark);
-                paw.position.set(pos.x, 0.05, pos.z);
-                paw.scale.set(1.2, 0.5, 1.0);
-                paw.castShadow = true;
-                paw.receiveShadow = true;
-                dogGroup.add(paw);
-            });
-            
-            // Tail
-            const tail = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.5, 5), furBrown);
-            tail.position.set(-0.8, 0.45, 0);
-            tail.rotation.x = 0.6;
-            tail.rotation.z = 0.2;
-            tail.castShadow = true;
-            dogGroup.add(tail);
-            
-            // Collar
-            const collar = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.05, 6, 12), new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 }));
-            collar.rotation.y = Math.PI / 2;
-            collar.position.set(0.55, 0.55, 0);
-            collar.scale.set(0.9, 0.8, 0.7);
-            collar.castShadow = true;
-            dogGroup.add(collar);
-            
-            // Scale and position
-            dogGroup.scale.set(1.1, 1.1, 1.1);
-            dogGroup.position.y = 0.15;
-            
-            // The dog model is built with head at +X, so forward is +X.
-            // We will rotate the entire group so that +Z becomes forward instead,
-            // because that makes orientation easier with standard lookAt.
-            // Apply a -90 degree rotation around Y to make +Z the forward direction.
-            dogGroup.rotation.y = -Math.PI / 2;
-            
-            scene.add(dogGroup);
-            
-            // Store references for animation
-            dogGroup.userData.legs = legs;
-            dogGroup.userData.tail = tail;
-            dogGroup.userData.ears = [earL, earR];
-            
-            // --- Atmosphere ---
-            const particleGeo = new THREE.BufferGeometry();
-            const particleCount = 500;
-            const posArray = new Float32Array(particleCount * 3);
-            for (let i=0; i<particleCount*3; i+=3) {
-                const r = 12 + Math.random()*25;
-                const theta = Math.random()*Math.PI*2;
-                const phi = Math.random()*Math.PI*2;
-                posArray[i] = Math.sin(theta)*Math.cos(phi)*r;
-                posArray[i+1] = 4 + Math.random()*14;
-                posArray[i+2] = Math.sin(theta)*Math.sin(phi)*r;
-            }
-            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            const particleMat = new THREE.PointsMaterial({ color: 0xe8dcc0, size: 0.09, transparent: true, blending: THREE.AdditiveBlending });
-            const particles = new THREE.Points(particleGeo, particleMat);
-            scene.add(particles);
-            
-            const hillMat = new THREE.MeshStandardMaterial({ color: 0x5a7a4a, roughness: 0.9 });
-            for (let i=0; i<6; i++) {
-                const hill = new THREE.Mesh(new THREE.ConeGeometry(7+Math.random()*8, 3+Math.random()*4, 8), hillMat);
-                const ang = (i/6)*Math.PI*2;
-                hill.position.set(Math.cos(ang)*38, -1, Math.sin(ang)*38);
-                hill.receiveShadow = true;
-                scene.add(hill);
-            }
-            
-            document.getElementById('loading').style.opacity = '0';
-            setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
-            
-            // --- Animation ---
-            let time = 0;
-            const runRadius = 5.8;
-            const speed = 0.9;
-            
-            function animate() {
-                requestAnimationFrame(animate);
-                
-                time += 0.016;
-                
-                // Wind effect on leaves
-                leafMeshes.forEach((leaf, i) => {
-                    if (leaf.position.y > 4) {
-                        leaf.position.x += Math.sin(time*2 + i)*0.003;
-                        leaf.position.z += Math.cos(time*1.8 + i)*0.003;
-                    }
-                });
-                treeGroup.rotation.z = Math.sin(time*0.3)*0.006;
-                treeGroup.rotation.x = Math.sin(time*0.2)*0.003;
-                
-                // Dachshund running
-                const angle = time * speed;
-                const posX = Math.cos(angle) * runRadius;
-                const posZ = Math.sin(angle) * runRadius;
-                dogGroup.position.x = posX;
-                dogGroup.position.z = posZ;
-                
-                // Calculate direction of movement (tangent)
-                const dirX = -Math.sin(angle);
-                const dirZ = Math.cos(angle);
-                
-                // Set rotation so that dog's forward (+Z after our initial rotation) points along movement direction
-                const targetAngle = Math.atan2(dirX, dirZ);
-                dogGroup.rotation.y = targetAngle - Math.PI/2; // adjust because we rotated the model initially
-                
-                // Bobbing
-                dogGroup.position.y = 0.15 + Math.abs(Math.sin(time * 14)) * 0.04;
-                
-                // Leg swing
-                dogGroup.userData.legs.forEach((leg, idx) => {
-                    if (idx % 2 === 0) {
-                        leg.rotation.x = Math.sin(time * 20) * 0.5;
-                    } else {
-                        leg.rotation.x = Math.sin(time * 20 + Math.PI) * 0.5;
-                    }
-                });
-                
-                // Tail wag
-                if (dogGroup.userData.tail) {
-                    dogGroup.userData.tail.rotation.z = 0.2 + Math.sin(time * 15) * 0.3;
+            for (let i=0; i<num; i++) {
+                const spread = (angle + 30 + Math.random()*30) * Math.PI/180;
+                const rot = (i/num)*Math.PI*2 + Math.random()*0.5;
+                const up = new THREE.Vector3(0,1,0);
+                const axis = new THREE.Vector3().crossVectors(up, dir).normalize();
+                if (axis.length() > 0.1) {
+                    const newDir = dir.clone().applyAxisAngle(axis, spread).applyAxisAngle(dir, rot);
+                    createBranch(end, newDir, newLen, newThick, angle*0.9, lvl+1);
                 }
-                
-                // Ear flop
-                dogGroup.userData.ears.forEach((ear, i) => {
-                    ear.rotation.x = (i === 0 ? -0.3 : 0.3) + Math.sin(time * 8) * 0.1;
-                });
-                
-                particles.rotation.y += 0.0008;
-                
-                controls.update();
-                renderer.render(scene, camera);
             }
+        }
+        
+        createBranch(new THREE.Vector3(0,0,0), new THREE.Vector3(0,1,0), 9, 2.0, 8, 0);
+        
+        for (let i=0; i<60; i++) {
+            const a = Math.random()*Math.PI*2;
+            const r = 3 + Math.random()*6;
+            const h = 6 + Math.random()*7;
+            const cluster = addFoliageCluster(new THREE.Vector3(Math.cos(a)*r, h, Math.sin(a)*r), 1.2 + Math.random()*1.5);
+            treeGroup.add(cluster);
+        }
+        
+        const topCluster = addFoliageCluster(new THREE.Vector3(0.5, 13, -0.5), 3.0);
+        treeGroup.add(topCluster);
+        const topCluster2 = addFoliageCluster(new THREE.Vector3(-0.8, 12.5, 1.2), 2.5);
+        treeGroup.add(topCluster2);
+        
+        treeGroup.position.y = 0;
+        scene.add(treeGroup);
+        
+        const leafMeshes = [];
+        treeGroup.traverse(obj => {
+            if (obj.isMesh && obj.material === leafMat) leafMeshes.push(obj);
+        });
+        
+        // --- Realistic Dachshund (correct orientation) ---
+        const dogGroup = new THREE.Group();
+        
+        const furBrown = new THREE.MeshStandardMaterial({ color: 0x8B4513, roughness: 0.8 });
+        const furDark = new THREE.MeshStandardMaterial({ color: 0x5D3A1A, roughness: 0.9 });
+        const furTan = new THREE.MeshStandardMaterial({ color: 0xD2A679, roughness: 0.8 });
+        const noseMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.4 });
+        const eyeMat = new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.1 });
+        
+        const body = new THREE.Mesh(new THREE.SphereGeometry(0.45, 12, 8), furBrown);
+        body.scale.set(1.8, 0.7, 0.8);
+        body.position.y = 0.35;
+        body.castShadow = true;
+        body.receiveShadow = true;
+        dogGroup.add(body);
+        
+        const chest = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8), furTan);
+        chest.scale.set(1.3, 0.5, 0.7);
+        chest.position.set(0.5, 0.25, -0.15);
+        chest.castShadow = true;
+        chest.receiveShadow = true;
+        dogGroup.add(chest);
+        
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10), furBrown);
+        head.position.set(0.9, 0.55, 0);
+        head.scale.set(0.9, 0.8, 0.7);
+        head.castShadow = true;
+        head.receiveShadow = true;
+        dogGroup.add(head);
+        
+        const snout = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.18, 0.6, 6), furBrown);
+        snout.rotation.z = Math.PI / 2;
+        snout.position.set(1.25, 0.45, 0);
+        snout.castShadow = true;
+        snout.receiveShadow = true;
+        dogGroup.add(snout);
+        
+        const nose = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6), noseMat);
+        nose.position.set(1.55, 0.45, 0);
+        nose.castShadow = true;
+        dogGroup.add(nose);
+        
+        const eyeGeo = new THREE.SphereGeometry(0.07, 6);
+        const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+        eyeL.position.set(1.05, 0.65, 0.18);
+        eyeL.castShadow = true;
+        dogGroup.add(eyeL);
+        const eyeR = eyeL.clone();
+        eyeR.position.set(1.05, 0.65, -0.18);
+        dogGroup.add(eyeR);
+        
+        const shineMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: new THREE.Color(0xaaaaaa), emissiveIntensity: 0.8 });
+        const shineL = new THREE.Mesh(new THREE.SphereGeometry(0.03, 4), shineMat);
+        shineL.position.set(1.08, 0.68, 0.2);
+        dogGroup.add(shineL);
+        const shineR = shineL.clone();
+        shineR.position.set(1.08, 0.68, -0.2);
+        dogGroup.add(shineR);
+        
+        const earGeo = new THREE.SphereGeometry(0.22, 7);
+        const earL = new THREE.Mesh(earGeo, furDark);
+        earL.position.set(0.9, 0.7, 0.28);
+        earL.scale.set(0.8, 1.4, 0.4);
+        earL.rotation.z = -0.2;
+        earL.rotation.x = -0.3;
+        earL.castShadow = true;
+        dogGroup.add(earL);
+        const earR = earL.clone();
+        earR.position.set(0.9, 0.7, -0.28);
+        earR.rotation.z = -0.2;
+        earR.rotation.x = 0.3;
+        dogGroup.add(earR);
+        
+        const legGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.3, 6);
+        const pawGeo = new THREE.SphereGeometry(0.11, 5);
+        
+        const legPositions = [
+            { x: -0.45, z: 0.25 },
+            { x: -0.45, z: -0.25 },
+            { x: 0.55, z: 0.25 },
+            { x: 0.55, z: -0.25 }
+        ];
+        
+        const legs = [];
+        legPositions.forEach(pos => {
+            const leg = new THREE.Mesh(legGeo, furBrown);
+            leg.position.set(pos.x, 0.2, pos.z);
+            leg.castShadow = true;
+            leg.receiveShadow = true;
+            dogGroup.add(leg);
+            legs.push(leg);
             
-            animate();
+            const paw = new THREE.Mesh(pawGeo, furDark);
+            paw.position.set(pos.x, 0.05, pos.z);
+            paw.scale.set(1.2, 0.5, 1.0);
+            paw.castShadow = true;
+            paw.receiveShadow = true;
+            dogGroup.add(paw);
+        });
+        
+        const tail = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.5, 5), furBrown);
+        tail.position.set(-0.8, 0.45, 0);
+        tail.rotation.x = 0.6;
+        tail.rotation.z = 0.2;
+        tail.castShadow = true;
+        dogGroup.add(tail);
+        
+        const collar = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.05, 6, 12), new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5 }));
+        collar.rotation.y = Math.PI / 2;
+        collar.position.set(0.55, 0.55, 0);
+        collar.scale.set(0.9, 0.8, 0.7);
+        collar.castShadow = true;
+        dogGroup.add(collar);
+        
+        dogGroup.scale.set(1.1, 1.1, 1.1);
+        dogGroup.position.y = 0.15;
+        
+        // IMPORTANT: Rotate so dog faces +Z (forward) instead of +X
+        dogGroup.rotation.y = -Math.PI / 2;
+        
+        scene.add(dogGroup);
+        
+        dogGroup.userData.legs = legs;
+        dogGroup.userData.tail = tail;
+        dogGroup.userData.ears = [earL, earR];
+        
+        // --- Atmosphere ---
+        const particleGeo = new THREE.BufferGeometry();
+        const particleCount = 500;
+        const posArray = new Float32Array(particleCount * 3);
+        for (let i=0; i<particleCount*3; i+=3) {
+            const r = 12 + Math.random()*25;
+            const theta = Math.random()*Math.PI*2;
+            const phi = Math.random()*Math.PI*2;
+            posArray[i] = Math.sin(theta)*Math.cos(phi)*r;
+            posArray[i+1] = 4 + Math.random()*14;
+            posArray[i+2] = Math.sin(theta)*Math.sin(phi)*r;
+        }
+        particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particleMat = new THREE.PointsMaterial({ color: 0xe8dcc0, size: 0.09, transparent: true, blending: THREE.AdditiveBlending });
+        const particles = new THREE.Points(particleGeo, particleMat);
+        scene.add(particles);
+        
+        const hillMat = new THREE.MeshStandardMaterial({ color: 0x5a7a4a, roughness: 0.9 });
+        for (let i=0; i<6; i++) {
+            const hill = new THREE.Mesh(new THREE.ConeGeometry(7+Math.random()*8, 3+Math.random()*4, 8), hillMat);
+            const ang = (i/6)*Math.PI*2;
+            hill.position.set(Math.cos(ang)*38, -1, Math.sin(ang)*38);
+            hill.receiveShadow = true;
+            scene.add(hill);
+        }
+        
+        // --- Animation ---
+        let time = 0;
+        const runRadius = 5.8;
+        const speed = 0.9;
+        
+        function animate() {
+            requestAnimationFrame(animate);
             
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+            time += 0.016;
+            
+            // Wind effect on leaves
+            leafMeshes.forEach((leaf, i) => {
+                if (leaf.position.y > 4) {
+                    leaf.position.x += Math.sin(time*2 + i)*0.003;
+                    leaf.position.z += Math.cos(time*1.8 + i)*0.003;
+                }
+            });
+            treeGroup.rotation.z = Math.sin(time*0.3)*0.006;
+            treeGroup.rotation.x = Math.sin(time*0.2)*0.003;
+            
+            // Dachshund running
+            const angle = time * speed;
+            const posX = Math.cos(angle) * runRadius;
+            const posZ = Math.sin(angle) * runRadius;
+            dogGroup.position.x = posX;
+            dogGroup.position.z = posZ;
+            
+            // Calculate direction of movement (tangent)
+            const dirX = -Math.sin(angle);
+            const dirZ = Math.cos(angle);
+            
+            // Set rotation so dog's forward (+Z after initial rotation) points along movement direction
+            const targetAngle = Math.atan2(dirX, dirZ);
+            dogGroup.rotation.y = targetAngle - Math.PI/2;
+            
+            // Bobbing
+            dogGroup.position.y = 0.15 + Math.abs(Math.sin(time * 14)) * 0.04;
+            
+            // Leg swing
+            dogGroup.userData.legs.forEach((leg, idx) => {
+                if (idx % 2 === 0) {
+                    leg.rotation.x = Math.sin(time * 20) * 0.5;
+                } else {
+                    leg.rotation.x = Math.sin(time * 20 + Math.PI) * 0.5;
+                }
             });
             
-            renderer.domElement.addEventListener('touchstart', (e) => { if (e.target === renderer.domElement) e.preventDefault(); });
-            renderer.domElement.addEventListener('touchmove', (e) => { if (e.target === renderer.domElement) e.preventDefault(); });
-        })();
+            // Tail wag
+            if (dogGroup.userData.tail) {
+                dogGroup.userData.tail.rotation.z = 0.2 + Math.sin(time * 15) * 0.3;
+            }
+            
+            // Ear flop
+            dogGroup.userData.ears.forEach((ear, i) => {
+                ear.rotation.x = (i === 0 ? -0.3 : 0.3) + Math.sin(time * 8) * 0.1;
+            });
+            
+            particles.rotation.y += 0.0008;
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        animate();
+        
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        renderer.domElement.addEventListener('touchstart', (e) => { if (e.target === renderer.domElement) e.preventDefault(); });
+        renderer.domElement.addEventListener('touchmove', (e) => { if (e.target === renderer.domElement) e.preventDefault(); });
     </script>
 </body>
 </html>
